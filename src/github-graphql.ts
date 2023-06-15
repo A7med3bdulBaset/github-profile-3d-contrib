@@ -182,7 +182,7 @@ export const fetchData = async (
     maxRepos: number
 ): Promise<ResponseType> => {
     const res1 = await fetchFirst(token, userName);
-    const result = res1.data
+    const result = res1.data;
 
     if (result && result.user.repositories.nodes.length === maxReposOneQuery) {
         const repos1 = result.user.repositories;
@@ -201,15 +201,14 @@ export const fetchData = async (
             }
         }
     }
-    return {
-        ...res1,
-        data: {
-            user: {
-                contributionsCollection: {
-                    commitContributionsByRepository: res1.data.user.contributionsCollection.commitContributionsByRepository.slice(10),
-                    contributionCalendar: res1.data.user.contributionsCollection.contributionCalendar.slice(10),
-                }
-            }
-        }
+
+    let res = res1;
+    if (res.data) {
+        res.data.user.contributionsCollection.contributionCalendar.weeks =
+            res1.data?.user.contributionsCollection.contributionCalendar.weeks.slice(
+                -13
+            ) || [];
     }
+
+    return res;
 };

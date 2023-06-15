@@ -182,41 +182,7 @@ export const fetchData = async (
     maxRepos: number
 ): Promise<ResponseType> => {
     const res1 = await fetchFirst(token, userName);
-    const result = res1.data;
-
-    // Get the contributions within the past three months (13 weeks)
-    if (result && result.user.contributionsCollection.contributionCalendar.weeks.length > 13) {
-        const threeMonthsContributions = result.user.contributionsCollection.contributionCalendar.weeks.slice(-13);
-
-        // Update the contribution calendar to only include the past three months
-        result.user.contributionsCollection.contributionCalendar.weeks = threeMonthsContributions;
-
-        // Filter commit contributions by repository to only include the past three months
-        result.user.contributionsCollection.commitContributionsByRepository = result.user.contributionsCollection.commitContributionsByRepository.filter(
-            (commitContributions) => {
-                const contributionsWithinThreeMonths = commitContributions.contributionDays.filter(
-                    (contribution) => {
-                        const contributionDate = new Date(contribution.date);
-                        const threeMonthsAgo = new Date();
-                        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-                        return contributionDate >= threeMonthsAgo;
-                    }
-                );
-                return contributionsWithinThreeMonths.length > 0;
-            }
-        );
-
-        // Update the total commit contributions to reflect only the past three months
-        result.user.contributionsCollection.totalCommitContributions = result.user.contributionsCollection.commitContributionsByRepository.reduce(
-            (total, commitContributions) => {
-                return total + commitContributions.contributionDays.reduce(
-                    (commitTotal, contribution) => commitTotal + contribution.contributionCount,
-                    0
-                );
-            },
-            0
-        );
-    }
+    const result = res1.data
 
     if (result && result.user.repositories.nodes.length === maxReposOneQuery) {
         const repos1 = result.user.repositories;
@@ -235,6 +201,15 @@ export const fetchData = async (
             }
         }
     }
-    return res1;
+    return {
+        ...res1,
+        data: {
+            user: {
+                contributionsCollection: {
+                    commitContributionsByRepository: res1.data.user.contributionsCollection.commitContributionsByRepository.slice(10),
+                    contributionCalendar: res1.data.user.contributionsCollection.contributionCalendar.slice(10),
+                }
+            }
+        }
+    }
 };
-

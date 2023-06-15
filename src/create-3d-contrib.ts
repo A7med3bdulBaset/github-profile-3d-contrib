@@ -292,7 +292,7 @@ export const create3DContrib = (
                 'transform',
                 `translate(${util.toFixed(baseX)} ${util.toFixed(
                     baseY - calHeight
-                )})`
+                )}), scale(2)`
             );
         if (isAnimate && contribLevel !== 0) {
             bar.append('animateTransform')

@@ -197,7 +197,7 @@ const create3DContrib = (svg, userInfo, x, y, width, height, settings, isForcedA
         const isAnimate = settings.growingAnimation || isForcedAnimation;
         const bar = group
             .append('g')
-            .attr('transform', `translate(${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight)})`);
+            .attr('transform', `translate(${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight)}), scale(2)`);
         if (isAnimate && contribLevel !== 0) {
             bar.append('animateTransform')
                 .attr('attributeName', 'transform')
